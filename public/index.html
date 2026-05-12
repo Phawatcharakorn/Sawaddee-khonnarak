@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wave | Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <span class="toggle-track">
+      <span class="toggle-icon toggle-sun">☀️</span>
+      <span class="toggle-icon toggle-moon">🌙</span>
+      <span class="toggle-thumb"></span>
+    </span>
+  </button>
+
+  <main class="container">
+
+    <!-- ── Profile ── -->
+    <section class="profile-section">
+      <div class="avatar" id="avatar">W</div>
+      <h1 class="name">เวฟ <span class="name-slash">/</span> วิน</h1>
+      <p class="fullname">ภวัชรกรณ์ สิงห์เอี่ยม</p>
+      <p class="bio">นาโนแมชชีนไงไอ้ลูกชาย</p>
+      <div class="tags">
+        <span class="tag">KU.83</span>
+        <span class="tag">SRC.DST</span>
+        <span class="tag tag-single">Single 🤍</span>
+      </div>
+      <div class="socials">
+        <a class="social-btn" href="https://www.instagram.com/potato_ps.ps/" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          potato_ps.ps
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Birthday Countdown ── -->
+    <section class="countdown-section">
+      <div class="countdown-card">
+        <p class="countdown-label" id="cdLabel">🎂 วันเกิดอีก</p>
+        <div class="countdown-grid">
+          <div class="cd-unit"><span class="cd-num" id="cd-days">--</span><span class="cd-text">วัน</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-hours">--</span><span class="cd-text">ชม.</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-mins">--</span><span class="cd-text">นาที</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-secs">--</span><span class="cd-text">วิ</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Music Player ── -->
+    <section class="player-section">
+
+      <!-- Vinyl Record -->
+      <div class="vinyl-wrap">
+        <div class="vinyl-outer">
+          <div class="vinyl-disc" id="vinyl">
+            <img class="vinyl-art" id="vinylArt" src="https://img.youtube.com/vi/ZwcmNkzm7m0/hqdefault.jpg" alt="album art" />
+            <div class="vinyl-rings"></div>
+            <div class="vinyl-hole"></div>
+          </div>
+          <div class="vinyl-needle" id="needle"></div>
+        </div>
+      </div>
+
+      <!-- Song Info -->
+      <div class="song-info">
+        <p class="song-title" id="songTitle">What Am I To Do</p>
+        <p class="song-artist" id="songArtist">Mick Jenkins</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-wrap">
+        <span class="time-label" id="curTime">0:00</span>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-thumb" id="progressThumb"></div>
+        </div>
+        <span class="time-label" id="durTime">0:00</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="ctrl-btn ctrl-prev" id="btnPrev" title="ก่อนหน้า">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-play" id="btnPlay" title="เล่น/หยุด">
+          <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-next" id="btnNext" title="ถัดไป">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Playlist -->
+      <div class="playlist-wrap">
+        <p class="playlist-header">🎵 Playlist</p>
+        <ul class="playlist" id="playlist">
+          <li class="playlist-loading">กำลังโหลด...</li>
+        </ul>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Hidden YouTube IFrame -->
+  <div id="yt-player"></div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js"></script>
+</body>
+</html>
