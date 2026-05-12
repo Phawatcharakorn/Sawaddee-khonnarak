@@ -554,12 +554,12 @@ ul { list-style: none; }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 28px 24px;
   width: 100%;
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   box-shadow: 0 16px 64px rgba(0,0,0,0.6);
   transform: translateY(20px);
   transition: transform 0.25s;
@@ -579,7 +579,7 @@ ul { list-style: none; }
 }
 .modal-close:hover { background: var(--surface3); color: var(--text); }
 
-.form-group-m { display: flex; flex-direction: column; gap: 6px; }
+.form-group-m { display: flex; flex-direction: column; gap: 8px; }
 .form-label-m { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 500; }
 .form-input-m {
   background: var(--surface2);
