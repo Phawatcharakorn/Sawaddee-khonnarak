@@ -101,7 +101,8 @@ function updateSongDisplay(idx) {
   songTitle.textContent  = song.title;
   songArtist.textContent = song.artist;
   // Set vinyl art as background-image for perfect circle fill
-  vinylArt.style.backgroundImage = `url(https://img.youtube.com/vi/${song.videoId}/hqdefault.jpg)`;
+  // mqdefault = 320x180 (16:9, no black bars) — fills circle perfectly
+  vinylArt.style.backgroundImage = `url(https://img.youtube.com/vi/${song.videoId}/mqdefault.jpg)`;
   // Highlight playlist
   document.querySelectorAll(".playlist-item").forEach((el, i) => {
     el.classList.toggle("active", i === idx);
