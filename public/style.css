@@ -614,12 +614,19 @@ ul { list-style: none; }
 .modal-err { font-size: 12px; color: #ff6b6b; padding: 6px 10px; background: rgba(255,107,107,0.08); border-radius: 6px; display: none; }
 .modal-ok  { font-size: 12px; color: #6bffb8; padding: 6px 10px; background: rgba(107,255,184,0.08); border-radius: 6px; display: none; }
 
+#modalStepPass,
+#modalStepAdd {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .modal-manage-link {
   font-size: 12px;
   color: var(--text-muted);
   text-align: center;
   display: block;
-  margin-top: -4px;
+  padding-top: 4px;
   transition: color 0.2s;
 }
 .modal-manage-link:hover { color: var(--text); }
