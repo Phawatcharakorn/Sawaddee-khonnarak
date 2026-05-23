@@ -335,7 +335,15 @@ fabAdmin.addEventListener("click", () => {
 });
 modalClose.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
-function closeModal() { modalOverlay.classList.remove("open"); }
+function closeModal() {
+  modalOverlay.classList.remove("open");
+  if (previewingEl) {
+    previewingEl.classList.remove("previewing");
+    previewingEl = null;
+    if (isPlaying && songs[currentIdx]) ytPlayer?.loadVideoById?.(songs[currentIdx].videoId);
+    else ytPlayer?.stopVideo?.();
+  }
+}
 
 modalPass.addEventListener("keydown", e => { if (e.key === "Enter") doModalLogin(); });
 modalLoginBtn.addEventListener("click", doModalLogin);
@@ -389,7 +397,12 @@ async function doSearch() {
     if (!data.length) { searchResults.innerHTML = '<li style="color:var(--text-muted);font-size:12px;padding:8px 4px">ไม่พบเพลง</li>'; return; }
     searchResults.innerHTML = data.map(s => `
       <li class="sr-item" data-id="${s.videoId}" data-title="${escHtml(s.title)}" data-artist="${escHtml(s.artist)}">
-        <img class="sr-thumb" src="${s.thumb}" alt="" loading="lazy" />
+        <div class="sr-thumb-wrap">
+          <img class="sr-thumb" src="${s.thumb}" alt="" loading="lazy" />
+          <div class="sr-preview-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
         <div class="sr-info">
           <p class="sr-title">${escHtml(s.title)}</p>
           <p class="sr-artist">${escHtml(s.artist)}</p>
@@ -399,6 +412,7 @@ async function doSearch() {
     `).join("");
     searchResults.querySelectorAll(".sr-item").forEach(el => {
       el.querySelector(".sr-add").addEventListener("click", () => addFromSearch(el));
+      el.querySelector(".sr-thumb-wrap").addEventListener("click", () => previewSong(el));
     });
   } catch {
     searchResults.innerHTML = '<li style="color:#ff6b6b;font-size:12px;padding:8px 4px">เชื่อมต่อไม่ได้</li>';
@@ -406,6 +420,34 @@ async function doSearch() {
     btnSearch.disabled = false;
     btnSearch.textContent = "ค้นหา";
   }
+}
+
+let previewingEl = null;
+
+function previewSong(el) {
+  const videoId = el.dataset.id;
+  const isThisOne = previewingEl === el;
+
+  // stop current preview
+  if (previewingEl) {
+    previewingEl.classList.remove("previewing");
+    previewingEl.querySelector(".sr-preview-btn svg path").setAttribute("d", "M8 5v14l11-7z");
+    previewingEl = null;
+  }
+
+  if (isThisOne) {
+    // toggled off — restore original song if was playing
+    if (isPlaying && songs[currentIdx]) ytPlayer?.loadVideoById?.(songs[currentIdx].videoId);
+    else ytPlayer?.stopVideo?.();
+    return;
+  }
+
+  // start preview
+  el.classList.add("previewing");
+  el.querySelector(".sr-preview-btn svg path").setAttribute("d", "M6 19h4V5H6v14zm8-14v14h4V5h-4z");
+  previewingEl = el;
+  startAudioKeepalive();
+  ytPlayer?.loadVideoById?.(videoId);
 }
 
 async function addFromSearch(el) {
