@@ -100,16 +100,22 @@ function updateSongDisplay(idx) {
   if (!song) return;
   songTitle.textContent  = song.title;
   songArtist.textContent = song.artist;
-  // Set vinyl art as background-image for perfect circle fill
-  // mqdefault = 320x180 (16:9, no black bars) — fills circle perfectly
   vinylArt.style.backgroundImage = `url(https://img.youtube.com/vi/${song.videoId}/mqdefault.jpg)`;
-  // Highlight playlist
   document.querySelectorAll(".playlist-item").forEach((el, i) => {
     el.classList.toggle("active", i === idx);
   });
-  // Scroll active item into view
   const active = playlist.querySelector(".playlist-item.active");
   if (active) active.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  updateMediaSession(song);
+}
+
+function updateMediaSession(song) {
+  if (!("mediaSession" in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title:  song.title,
+    artist: song.artist,
+    artwork: [{ src: `https://img.youtube.com/vi/${song.videoId}/mqdefault.jpg`, sizes: "320x180", type: "image/jpeg" }],
+  });
 }
 
 function renderPlaylist() {
@@ -165,6 +171,9 @@ function setPlaying(state) {
   btnPlay.querySelector(".icon-pause").style.display = state ? "block" : "none";
   clearInterval(progressInterval);
   if (state) progressInterval = setInterval(updateProgress, 800);
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.playbackState = state ? "playing" : "paused";
+  }
 }
 
 function updateProgress() {
@@ -365,6 +374,14 @@ async function doModalAdd() {
     modalAddBtn.disabled = false;
     modalAddBtn.textContent = "เพิ่มเพลง";
   }
+}
+
+// ─── Media Session Action Handlers ────────────────────────────────────────
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.setActionHandler("play",          () => { ytPlayer?.playVideo?.(); setPlaying(true); });
+  navigator.mediaSession.setActionHandler("pause",         () => { ytPlayer?.pauseVideo?.(); setPlaying(false); });
+  navigator.mediaSession.setActionHandler("nexttrack",     nextSong);
+  navigator.mediaSession.setActionHandler("previoustrack", prevSong);
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────
