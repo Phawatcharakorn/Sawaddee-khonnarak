@@ -395,7 +395,10 @@ async function doSearch() {
     const data = await res.json();
     if (!res.ok) { searchResults.innerHTML = `<li style="color:#ff6b6b;font-size:12px;padding:8px 4px">${data.error}</li>`; return; }
     if (!data.length) { searchResults.innerHTML = '<li style="color:var(--text-muted);font-size:12px;padding:8px 4px">ไม่พบเพลง</li>'; return; }
-    searchResults.innerHTML = data.map(s => `
+    const addedIds = new Set(songs.map(s => s.videoId));
+    searchResults.innerHTML = data.map(s => {
+      const already = addedIds.has(s.videoId);
+      return `
       <li class="sr-item" data-id="${s.videoId}" data-title="${escHtml(s.title)}" data-artist="${escHtml(s.artist)}">
         <div class="sr-thumb-wrap">
           <img class="sr-thumb" src="${s.thumb}" alt="" loading="lazy" />
@@ -407,9 +410,9 @@ async function doSearch() {
           <p class="sr-title">${escHtml(s.title)}</p>
           <p class="sr-artist">${escHtml(s.artist)}</p>
         </div>
-        <button class="sr-add" title="เพิ่มเพลง">+</button>
-      </li>
-    `).join("");
+        <button class="sr-add ${already ? "sr-added" : ""}" ${already ? "disabled" : ""} title="${already ? "มีแล้ว" : "เพิ่มเพลง"}">${already ? "✓" : "+"}</button>
+      </li>`;
+    }).join("");
     searchResults.querySelectorAll(".sr-item").forEach(el => {
       el.querySelector(".sr-add").addEventListener("click", () => addFromSearch(el));
       el.querySelector(".sr-thumb-wrap").addEventListener("click", () => previewSong(el));
@@ -553,6 +556,32 @@ document.addEventListener("visibilitychange", () => {
     setTimeout(() => { try { ytPlayer.playVideo(); } catch {} }, 300);
   }
 });
+
+// ─── Keyboard Background ──────────────────────────────────────────────────
+(function spawnKeys() {
+  const bg = document.getElementById("keysBg");
+  if (!bg) return;
+  const COUNT = 28;
+  for (let i = 0; i < COUNT; i++) {
+    const k = document.createElement("div");
+    k.className = "bg-key";
+    const size = 22 + Math.random() * 28;
+    const dur  = 10 + Math.random() * 14;
+    const del  = -(Math.random() * dur);         // negative delay = starts mid-flight
+    k.style.cssText = `
+      left:${Math.random() * 100}%;
+      width:${size}px;
+      height:${size}px;
+      animation-duration:${dur}s;
+      animation-delay:${del}s;
+      opacity:${0.04 + Math.random() * 0.05};
+    `;
+    bg.appendChild(k);
+  }
+})();
+
+// ─── Keep-alive ping ──────────────────────────────────────────────────────
+setInterval(() => fetch("/api/songs", { method: "HEAD" }).catch(() => {}), 60_000);
 
 // ─── Init ─────────────────────────────────────────────────────────────────
 loadSongs();

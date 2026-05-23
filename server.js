@@ -94,6 +94,9 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
+// HEAD /api/songs — keep-alive ping (no body returned)
+app.head("/api/songs", (_req, res) => res.sendStatus(200));
+
 // GET /api/songs
 app.get("/api/songs", dbReady, async (_req, res) => {
   const songs = await Song.find().sort({ order: 1, addedAt: 1 });
