@@ -341,6 +341,80 @@ async function doModalLogin() {
   }
 }
 
+// ─── Search ───────────────────────────────────────────────────────────────
+const modalSearch   = document.getElementById("modalSearch");
+const btnSearch     = document.getElementById("btnSearch");
+const searchResults = document.getElementById("searchResults");
+
+async function doSearch() {
+  const q = modalSearch.value.trim();
+  if (!q) return;
+  btnSearch.disabled = true;
+  btnSearch.textContent = "...";
+  searchResults.innerHTML = '<li style="color:var(--text-muted);font-size:12px;padding:8px 4px">กำลังค้นหา...</li>';
+  try {
+    const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    if (!res.ok) { searchResults.innerHTML = `<li style="color:#ff6b6b;font-size:12px;padding:8px 4px">${data.error}</li>`; return; }
+    if (!data.length) { searchResults.innerHTML = '<li style="color:var(--text-muted);font-size:12px;padding:8px 4px">ไม่พบเพลง</li>'; return; }
+    searchResults.innerHTML = data.map(s => `
+      <li class="sr-item" data-id="${s.videoId}" data-title="${escHtml(s.title)}" data-artist="${escHtml(s.artist)}">
+        <img class="sr-thumb" src="${s.thumb}" alt="" loading="lazy" />
+        <div class="sr-info">
+          <p class="sr-title">${escHtml(s.title)}</p>
+          <p class="sr-artist">${escHtml(s.artist)}</p>
+        </div>
+        <button class="sr-add" title="เพิ่มเพลง">+</button>
+      </li>
+    `).join("");
+    searchResults.querySelectorAll(".sr-item").forEach(el => {
+      el.querySelector(".sr-add").addEventListener("click", () => addFromSearch(el));
+    });
+  } catch {
+    searchResults.innerHTML = '<li style="color:#ff6b6b;font-size:12px;padding:8px 4px">เชื่อมต่อไม่ได้</li>';
+  } finally {
+    btnSearch.disabled = false;
+    btnSearch.textContent = "ค้นหา";
+  }
+}
+
+async function addFromSearch(el) {
+  const btn    = el.querySelector(".sr-add");
+  const videoId = el.dataset.id;
+  const title   = el.dataset.title;
+  const artist  = el.dataset.artist;
+  btn.disabled = true;
+  btn.textContent = "✓";
+  try {
+    const res = await fetch("/api/songs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...adminSession, youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`, title, artist }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      btn.style.background = "#6bffb8";
+      btn.style.color = "#000";
+      modalAddOk.textContent = `✅ เพิ่ม "${data.title}" แล้ว`;
+      modalAddOk.style.display = "block";
+      setTimeout(() => (modalAddOk.style.display = "none"), 3000);
+      await loadSongs();
+    } else {
+      btn.disabled = false;
+      btn.textContent = "+";
+      modalAddErr.textContent = data.error || "เพิ่มไม่สำเร็จ";
+      modalAddErr.style.display = "block";
+      setTimeout(() => (modalAddErr.style.display = "none"), 3000);
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = "+";
+  }
+}
+
+btnSearch.addEventListener("click", doSearch);
+modalSearch.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+
 modalUrl.addEventListener("keydown", e => { if (e.key === "Enter") doModalAdd(); });
 modalAddBtn.addEventListener("click", doModalAdd);
 

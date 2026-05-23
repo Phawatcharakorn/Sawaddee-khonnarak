@@ -163,13 +163,22 @@
       </div>
       <!-- Step 2: Add Song -->
       <div id="modalStepAdd" style="display:none">
+        <!-- Search bar -->
+        <div class="search-row">
+          <input type="text" class="form-input-m" id="modalSearch" placeholder="ค้นหาเพลง เช่น แสตมป์, BNK48..." />
+          <button class="btn-search" id="btnSearch">ค้นหา</button>
+        </div>
+        <!-- Search results -->
+        <ul class="search-results" id="searchResults"></ul>
+        <!-- Divider -->
+        <div class="search-divider"><span>หรือวาง URL โดยตรง</span></div>
+        <!-- URL fallback -->
         <div class="form-group-m">
-          <label class="form-label-m">YouTube URL</label>
           <input type="text" class="form-input-m" id="modalUrl" placeholder="https://www.youtube.com/watch?v=..." />
         </div>
         <div class="modal-err" id="modalAddErr"></div>
         <div class="modal-ok"  id="modalAddOk"></div>
-        <button class="btn-modal" id="modalAddBtn">เพิ่มเพลง</button>
+        <button class="btn-modal" id="modalAddBtn">เพิ่มจาก URL</button>
         <a href="/admin.html" class="modal-manage-link">จัดการเพลงทั้งหมด →</a>
       </div>
     </div>

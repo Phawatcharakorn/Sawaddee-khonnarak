@@ -71,6 +71,29 @@ function dbReady(req, res, next) {
   next();
 }
 
+// GET /api/search?q=... — YouTube search proxy
+app.get("/api/search", async (req, res) => {
+  const q = req.query.q?.trim();
+  if (!q) return res.status(400).json({ error: "กรุณาใส่คำค้นหา" });
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) return res.status(503).json({ error: "ยังไม่ได้ตั้งค่า YOUTUBE_API_KEY" });
+  try {
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(q)}&key=${key}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    if (!r.ok) return res.status(502).json({ error: d.error?.message || "YouTube API error" });
+    const items = (d.items || []).map(it => ({
+      videoId: it.id.videoId,
+      title:   it.snippet.title,
+      artist:  it.snippet.channelTitle,
+      thumb:   it.snippet.thumbnails?.medium?.url || `https://img.youtube.com/vi/${it.id.videoId}/mqdefault.jpg`,
+    }));
+    res.json(items);
+  } catch {
+    res.status(502).json({ error: "เชื่อมต่อ YouTube ไม่ได้" });
+  }
+});
+
 // GET /api/songs
 app.get("/api/songs", dbReady, async (_req, res) => {
   const songs = await Song.find().sort({ order: 1, addedAt: 1 });
