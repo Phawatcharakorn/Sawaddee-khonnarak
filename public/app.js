@@ -583,5 +583,10 @@ document.addEventListener("visibilitychange", () => {
 // ─── Keep-alive ping ──────────────────────────────────────────────────────
 setInterval(() => fetch("/api/songs", { method: "HEAD" }).catch(() => {}), 60_000);
 
+// ─── Service Worker ───────────────────────────────────────────────────────
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────
 loadSongs();
