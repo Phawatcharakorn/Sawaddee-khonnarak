@@ -262,6 +262,7 @@ ul { list-style: none; }
   padding: 2.5px;
   background: var(--border);
   transition: transform 0.2s;
+  will-change: transform;
 }
 .story-item:hover .story-ring { transform: scale(1.07); }
 .story-item.active .story-ring {
@@ -365,12 +366,13 @@ ul { list-style: none; }
   width: 230px; height: 230px;
   border-radius: 50%;
   position: relative;
-  overflow: hidden;       /* ← clips everything inside to circle */
+  overflow: hidden;
   box-shadow: 0 0 0 2px rgba(255,255,255,0.06), 0 10px 40px rgba(0,0,0,0.7);
   animation: spin 10s linear infinite;
   animation-play-state: paused;
   transition: box-shadow 0.4s;
   background: #111;
+  will-change: transform;
 }
 .vinyl-disc.playing {
   animation-play-state: running;
@@ -604,8 +606,7 @@ ul { list-style: none; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.82);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -618,6 +619,7 @@ ul { list-style: none; }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 
 .modal-box {
+  will-change: transform;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
