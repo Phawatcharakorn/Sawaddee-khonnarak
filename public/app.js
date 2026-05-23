@@ -149,7 +149,7 @@ window.onYouTubeIframeAPIReady = function () {
     height: "1", width: "1",
     videoId: songs[0]?.videoId || "ZwcmNkzm7m0",
     playerVars: { autoplay:0, controls:0, disablekb:1, enablejsapi:1,
-                  modestbranding:1, rel:0, iv_load_policy:3 },
+                  modestbranding:1, rel:0, iv_load_policy:3, playsinline:1 },
     events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
   });
 };
@@ -222,6 +222,7 @@ function prevSong() {
 // ─── Controls ─────────────────────────────────────────────────────────────
 btnPlay.addEventListener("click", () => {
   if (!ytPlayer) return;
+  startAudioKeepalive();
   if (isPlaying) {
     ytPlayer.pauseVideo();
   } else {
@@ -383,6 +384,29 @@ if ("mediaSession" in navigator) {
   navigator.mediaSession.setActionHandler("nexttrack",     nextSong);
   navigator.mediaSession.setActionHandler("previoustrack", prevSong);
 }
+
+// ─── Background Audio Keepalive ───────────────────────────────────────────
+// Silent AudioContext prevents browser from suspending audio when screen locks
+let _audioCtx = null;
+function startAudioKeepalive() {
+  if (_audioCtx) return;
+  try {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = _audioCtx.createOscillator();
+    const gain = _audioCtx.createGain();
+    gain.gain.value = 0.0001;
+    osc.connect(gain);
+    gain.connect(_audioCtx.destination);
+    osc.start();
+  } catch {}
+}
+
+// Resume playback if browser paused it during screen lock
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && isPlaying && ytPlayer?.playVideo) {
+    setTimeout(() => { try { ytPlayer.playVideo(); } catch {} }, 300);
+  }
+});
 
 // ─── Init ─────────────────────────────────────────────────────────────────
 loadSongs();
