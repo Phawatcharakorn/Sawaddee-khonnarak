@@ -78,6 +78,7 @@ async function loadSongs() {
     const res = await fetch("/api/songs");
     songs = await res.json();
     rebuildShuffled();
+    renderStories();
     renderPlaylist();
     if (songs.length > 0) updateSongDisplay(0);
   } catch {
@@ -107,6 +108,7 @@ function updateSongDisplay(idx) {
   const active = playlist.querySelector(".playlist-item.active");
   if (active) active.scrollIntoView({ block: "nearest", behavior: "smooth" });
   updateMediaSession(song);
+  syncStories();
 }
 
 function updateMediaSession(song) {
@@ -116,6 +118,33 @@ function updateMediaSession(song) {
     artist: song.artist,
     artwork: [{ src: `https://img.youtube.com/vi/${song.videoId}/mqdefault.jpg`, sizes: "320x180", type: "image/jpeg" }],
   });
+}
+
+function renderStories() {
+  const wrap = document.getElementById("storiesScroll");
+  if (!wrap || !songs.length) return;
+  wrap.innerHTML = songs.map((s, i) => `
+    <div class="story-item" data-idx="${i}">
+      <div class="story-ring">
+        <div class="story-img-wrap">
+          <img class="story-img" src="https://img.youtube.com/vi/${s.videoId}/mqdefault.jpg" alt="" loading="lazy" />
+        </div>
+      </div>
+      <span class="story-label">${escHtml(s.title)}</span>
+    </div>
+  `).join("");
+  wrap.querySelectorAll(".story-item").forEach(el => {
+    el.addEventListener("click", () => playSong(parseInt(el.dataset.idx)));
+  });
+  syncStories();
+}
+
+function syncStories() {
+  document.querySelectorAll(".story-item").forEach((el, i) => {
+    el.classList.toggle("active", i === currentIdx && isPlaying);
+  });
+  const active = document.querySelector(".story-item.active");
+  if (active) active.scrollIntoView({ inline: "nearest", behavior: "smooth", block: "nearest" });
 }
 
 function renderPlaylist() {
@@ -174,6 +203,7 @@ function setPlaying(state) {
   if ("mediaSession" in navigator) {
     navigator.mediaSession.playbackState = state ? "playing" : "paused";
   }
+  syncStories();
 }
 
 function updateProgress() {
