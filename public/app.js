@@ -561,26 +561,52 @@ document.addEventListener("visibilitychange", () => {
 (function spawnBokeh() {
   const bg = document.getElementById("keysBg");
   if (!bg) return;
-  const COUNT = 14;
-  const palette = ['#7c3aed','#2563eb','#0d9488','#db2777','#0284c7','#9333ea','#0891b2'];
+  const COUNT = 8;
+  const palette = [
+    [124,58,237],[37,99,235],[13,148,136],
+    [219,39,119],[2,132,199],[147,51,234],[8,145,178],
+  ];
   for (let i = 0; i < COUNT; i++) {
     const k = document.createElement("div");
     k.className = "bg-key";
-    const size = 160 + Math.random() * 220;
-    const dur  = 22 + Math.random() * 28;
+    const size = 200 + Math.random() * 220;
+    const dur  = 25 + Math.random() * 30;
     const del  = -(Math.random() * dur);
-    const color = palette[Math.floor(Math.random() * palette.length)];
+    const [r,g,b] = palette[Math.floor(Math.random() * palette.length)];
+    const a = (0.55 + Math.random() * 0.3).toFixed(2);
     k.style.cssText = `
       left:${Math.random() * 110 - 5}%;
       width:${size}px;
       height:${size}px;
       animation-duration:${dur}s;
       animation-delay:${del}s;
-      background:${color};
-      opacity:${0.10 + Math.random() * 0.08};
+      background:radial-gradient(circle at center,rgba(${r},${g},${b},${a}) 0%,transparent 68%);
     `;
     bg.appendChild(k);
   }
+})();
+
+// ─── Stories Navigation ────────────────────────────────────────────────────
+(function initStoriesNav() {
+  const scroll   = document.getElementById("storiesScroll");
+  const prevBtn  = document.getElementById("storiesPrev");
+  const nextBtn  = document.getElementById("storiesNext");
+  if (!scroll || !prevBtn || !nextBtn) return;
+
+  scroll.addEventListener("wheel", e => {
+    e.preventDefault();
+    scroll.scrollBy({ left: e.deltaY * 1.5, behavior: "smooth" });
+  }, { passive: false });
+
+  prevBtn.addEventListener("click", () => scroll.scrollBy({ left: -88, behavior: "smooth" }));
+  nextBtn.addEventListener("click", () => scroll.scrollBy({ left: 88, behavior: "smooth" }));
+
+  function updateNav() {
+    prevBtn.disabled = scroll.scrollLeft <= 0;
+    nextBtn.disabled = scroll.scrollLeft >= scroll.scrollWidth - scroll.clientWidth - 1;
+  }
+  scroll.addEventListener("scroll", updateNav, { passive: true });
+  updateNav();
 })();
 
 // ─── Keep-alive ping ──────────────────────────────────────────────────────
