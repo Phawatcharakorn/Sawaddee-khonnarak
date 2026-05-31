@@ -558,33 +558,114 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// ─── Bokeh Background ─────────────────────────────────────────────────────
-(function spawnBokeh() {
+// ─── Space-Time Starfield (Canvas 2D) ─────────────────────────────────────
+(function initStarfield() {
   const bg = document.getElementById("keysBg");
   if (!bg) return;
-  const COUNT = 8;
-  const palette = [
-    [124,58,237],[37,99,235],[13,148,136],
-    [219,39,119],[2,132,199],[147,51,234],[8,145,178],
-  ];
-  for (let i = 0; i < COUNT; i++) {
-    const k = document.createElement("div");
-    k.className = "bg-key";
-    const size = 200 + Math.random() * 220;
-    const dur  = 25 + Math.random() * 30;
-    const del  = -(Math.random() * dur);
-    const [r,g,b] = palette[Math.floor(Math.random() * palette.length)];
-    const a = (0.55 + Math.random() * 0.3).toFixed(2);
-    k.style.cssText = `
-      left:${Math.random() * 110 - 5}%;
-      width:${size}px;
-      height:${size}px;
-      animation-duration:${dur}s;
-      animation-delay:${del}s;
-      background:radial-gradient(circle at center,rgba(${r},${g},${b},${a}) 0%,transparent 68%);
-    `;
-    bg.appendChild(k);
+  bg.innerHTML = "";
+
+  const canvas = document.createElement("canvas");
+  canvas.id = "starCanvas";
+  bg.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+
+  const COUNT = 100;
+  const LINE_DIST = 130;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, stars = [], raf;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
   }
+
+  function initStars() {
+    stars = Array.from({ length: COUNT }, () => ({
+      x:  Math.random() * W,
+      y:  Math.random() * H,
+      r:  0.4 + Math.random() * 1.5,
+      base: 0.35 + Math.random() * 0.65,
+      ts:  0.0006 + Math.random() * 0.0018,   // twinkle speed
+      tp:  Math.random() * Math.PI * 2,        // twinkle phase
+      vx:  (Math.random() - 0.5) * 0.035,
+      vy:  (Math.random() - 0.5) * 0.035,
+    }));
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Constellation lines
+    ctx.lineWidth = 0.4;
+    for (let i = 0; i < COUNT; i++) {
+      for (let j = i + 1; j < COUNT; j++) {
+        const dx = stars[i].x - stars[j].x;
+        const dy = stars[i].y - stars[j].y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < LINE_DIST * LINE_DIST) {
+          ctx.globalAlpha = (1 - Math.sqrt(d2) / LINE_DIST) * 0.07;
+          ctx.strokeStyle = "#5a8ce6";
+          ctx.beginPath();
+          ctx.moveTo(stars[i].x, stars[i].y);
+          ctx.lineTo(stars[j].x, stars[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Stars
+    for (let i = 0; i < COUNT; i++) {
+      const s = stars[i];
+      if (!reducedMotion) {
+        s.x += s.vx;
+        s.y += s.vy;
+        if (s.x < -2) s.x = W + 2;
+        if (s.x > W + 2) s.x = -2;
+        if (s.y < -2) s.y = H + 2;
+        if (s.y > H + 2) s.y = -2;
+      }
+      const alpha = s.base * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.ts + s.tp)));
+
+      // Soft glow for bigger stars
+      if (s.r > 1.0) {
+        ctx.globalAlpha = alpha * 0.18;
+        ctx.fillStyle = "#aac8ff";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Star core
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = s.r > 1.2 ? "#ddeeff" : "#c8d8ff";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  resize();
+  initStars();
+  window.addEventListener("resize", () => { resize(); initStars(); });
+
+  let t = 0;
+  function frame() {
+    t++;
+    draw(t);
+    raf = requestAnimationFrame(frame);
+  }
+
+  if (reducedMotion) {
+    draw(0);
+  } else {
+    frame();
+  }
+
+  // Pause when tab is hidden to save CPU
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { cancelAnimationFrame(raf); }
+    else if (!reducedMotion) { frame(); }
+  });
 })();
 
 // ─── Stories Navigation ────────────────────────────────────────────────────
