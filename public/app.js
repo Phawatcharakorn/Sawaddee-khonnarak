@@ -557,24 +557,27 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// ─── Keyboard Background ──────────────────────────────────────────────────
-(function spawnKeys() {
+// ─── Bokeh Background ─────────────────────────────────────────────────────
+(function spawnBokeh() {
   const bg = document.getElementById("keysBg");
   if (!bg) return;
-  const COUNT = 28;
+  const COUNT = 14;
+  const palette = ['#7c3aed','#2563eb','#0d9488','#db2777','#0284c7','#9333ea','#0891b2'];
   for (let i = 0; i < COUNT; i++) {
     const k = document.createElement("div");
     k.className = "bg-key";
-    const size = 22 + Math.random() * 28;
-    const dur  = 10 + Math.random() * 14;
-    const del  = -(Math.random() * dur);         // negative delay = starts mid-flight
+    const size = 160 + Math.random() * 220;
+    const dur  = 22 + Math.random() * 28;
+    const del  = -(Math.random() * dur);
+    const color = palette[Math.floor(Math.random() * palette.length)];
     k.style.cssText = `
-      left:${Math.random() * 100}%;
+      left:${Math.random() * 110 - 5}%;
       width:${size}px;
       height:${size}px;
       animation-duration:${dur}s;
       animation-delay:${del}s;
-      opacity:${0.04 + Math.random() * 0.05};
+      background:${color};
+      opacity:${0.10 + Math.random() * 0.08};
     `;
     bg.appendChild(k);
   }
