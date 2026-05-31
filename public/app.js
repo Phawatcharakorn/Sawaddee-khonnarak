@@ -593,6 +593,7 @@ document.addEventListener("visibilitychange", () => {
   }
 
   function draw(t) {
+    const dark = document.documentElement.dataset.theme !== "light";
     ctx.clearRect(0, 0, W, H);
 
     // Constellation lines
@@ -603,8 +604,8 @@ document.addEventListener("visibilitychange", () => {
         const dy = stars[i].y - stars[j].y;
         const d2 = dx * dx + dy * dy;
         if (d2 < LINE_DIST * LINE_DIST) {
-          ctx.globalAlpha = (1 - Math.sqrt(d2) / LINE_DIST) * 0.07;
-          ctx.strokeStyle = "#5a8ce6";
+          ctx.globalAlpha = (1 - Math.sqrt(d2) / LINE_DIST) * (dark ? 0.07 : 0.09);
+          ctx.strokeStyle = dark ? "#5a8ce6" : "#1e40af";
           ctx.beginPath();
           ctx.moveTo(stars[i].x, stars[i].y);
           ctx.lineTo(stars[j].x, stars[j].y);
@@ -613,30 +614,29 @@ document.addEventListener("visibilitychange", () => {
       }
     }
 
-    // Stars
+    // Stars — light mode: dark navy/indigo; dark mode: pale blue/white
+    const glowCol  = dark ? "#aac8ff" : "#3b5fc0";
+    const coreHi   = dark ? "#ddeeff" : "#1e3a8a";
+    const coreLo   = dark ? "#c8d8ff" : "#2d4f9e";
+
     for (let i = 0; i < COUNT; i++) {
       const s = stars[i];
       if (!reducedMotion) {
-        s.x += s.vx;
-        s.y += s.vy;
-        if (s.x < -2) s.x = W + 2;
-        if (s.x > W + 2) s.x = -2;
-        if (s.y < -2) s.y = H + 2;
-        if (s.y > H + 2) s.y = -2;
+        s.x += s.vx;  s.y += s.vy;
+        if (s.x < -2) s.x = W + 2;  if (s.x > W + 2) s.x = -2;
+        if (s.y < -2) s.y = H + 2;  if (s.y > H + 2) s.y = -2;
       }
       const alpha = s.base * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.ts + s.tp)));
 
-      // Soft glow for bigger stars
       if (s.r > 1.0) {
-        ctx.globalAlpha = alpha * 0.18;
-        ctx.fillStyle = "#aac8ff";
+        ctx.globalAlpha = alpha * (dark ? 0.18 : 0.22);
+        ctx.fillStyle = glowCol;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r * 3.5, 0, Math.PI * 2);
         ctx.fill();
       }
-      // Star core
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = s.r > 1.2 ? "#ddeeff" : "#c8d8ff";
+      ctx.fillStyle = s.r > 1.2 ? coreHi : coreLo;
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fill();
