@@ -213,7 +213,7 @@ function updateProgress() {
     const dur = ytPlayer.getDuration()    || 0;
     if (dur > 0) {
       const pct = (cur / dur) * 100;
-      progressFill.style.width = pct + "%";
+      progressFill.style.transform = 'scaleX(' + (pct / 100) + ')';
       progressThumb.style.left = pct + "%";
       curTime.textContent = formatTime(cur);
       durTime.textContent = formatTime(dur);
@@ -229,7 +229,7 @@ function playSong(idx) {
     ytPlayer.loadVideoById(songs[currentIdx].videoId);
     setPlaying(true);
   }
-  progressFill.style.width = "0%";
+  progressFill.style.transform = 'scaleX(0)';
   progressThumb.style.left = "0%";
   curTime.textContent = "0:00";
   durTime.textContent = "0:00";

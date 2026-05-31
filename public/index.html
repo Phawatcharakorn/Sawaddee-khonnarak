@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-title" content="Wave" />
   <meta name="theme-color" content="#0a0a0a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -92,8 +92,8 @@
           <div class="vinyl-disc" id="vinyl">
             <div class="vinyl-art" id="vinylArt"></div>
             <div class="vinyl-rings"></div>
-            <div class="vinyl-hole"></div>
           </div>
+          <div class="vinyl-hole"></div>
         </div>
       </div>
 
@@ -136,9 +136,11 @@
 
       <!-- Volume Slider -->
       <div class="volume-wrap" id="volumeWrap">
-        <svg class="vol-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" />
-        <svg class="vol-icon-lg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <div class="volume-inner">
+          <svg class="vol-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" />
+          <svg class="vol-icon-lg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </div>
       </div>
 
       <!-- Playlist -->
@@ -162,7 +164,7 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>➕ เพิ่มเพลง</h3>
+        <h2>➕ เพิ่มเพลง</h2>
         <button class="modal-close" id="modalClose">✕</button>
       </div>
       <!-- Step 1: Password -->

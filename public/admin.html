@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Wave Profile</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
     /* Admin-specific styles */
@@ -23,11 +23,11 @@
       justify-content: space-between;
     }
     .admin-title {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
     }
     .back-btn {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -51,7 +51,7 @@
       gap: 16px;
     }
     .login-card h2 {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
       text-align: center;
     }
@@ -62,6 +62,7 @@
       letter-spacing: 0.8px;
       color: var(--text-muted);
       font-weight: 500;
+      font-family: 'Sarabun', sans-serif;
     }
     .form-input {
       background: var(--surface2);
@@ -93,7 +94,7 @@
 
     .error-msg {
       color: #ff6b6b;
-      font-size: 13px;
+      font-size: 12px;
       text-align: center;
       padding: 8px;
       background: rgba(255, 107, 107, 0.08);
@@ -102,7 +103,7 @@
     }
     .success-msg {
       color: #6bffb8;
-      font-size: 13px;
+      font-size: 12px;
       text-align: center;
       padding: 8px;
       background: rgba(107, 255, 184, 0.08);
@@ -173,18 +174,20 @@
     }
     .admin-song-info { flex: 1; overflow: hidden; }
     .admin-song-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
+      font-family: 'Sarabun', sans-serif;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .admin-song-artist {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
+      font-family: 'Sarabun', sans-serif;
     }
     .admin-song-id {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-sub);
       font-family: monospace;
     }
@@ -203,12 +206,12 @@
     .btn-delete:hover { background: rgba(255, 107, 107, 0.18); }
     .songs-empty {
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 12px;
       text-align: center;
       padding: 20px;
     }
     .logout-btn {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
       padding: 8px 16px;
       border-radius: var(--radius-sm);
