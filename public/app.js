@@ -80,7 +80,7 @@ async function loadSongs() {
     rebuildShuffled();
     renderStories();
     renderPlaylist();
-    if (songs.length > 0) updateSongDisplay(0);
+    if (songs.length > 0) updateSongDisplay(Math.min(currentIdx, songs.length - 1));
   } catch {
     playlist.innerHTML = '<li class="playlist-loading">โหลดไม่สำเร็จ</li>';
   }
@@ -137,6 +137,7 @@ function renderStories() {
     el.addEventListener("click", () => playSong(parseInt(el.dataset.idx)));
   });
   syncStories();
+  requestAnimationFrame(refreshStoriesNav);
 }
 
 function syncStories() {
@@ -587,10 +588,11 @@ document.addEventListener("visibilitychange", () => {
 })();
 
 // ─── Stories Navigation ────────────────────────────────────────────────────
+let refreshStoriesNav = () => {};
 (function initStoriesNav() {
-  const scroll   = document.getElementById("storiesScroll");
-  const prevBtn  = document.getElementById("storiesPrev");
-  const nextBtn  = document.getElementById("storiesNext");
+  const scroll  = document.getElementById("storiesScroll");
+  const prevBtn = document.getElementById("storiesPrev");
+  const nextBtn = document.getElementById("storiesNext");
   if (!scroll || !prevBtn || !nextBtn) return;
 
   scroll.addEventListener("wheel", e => {
@@ -606,6 +608,7 @@ document.addEventListener("visibilitychange", () => {
     nextBtn.disabled = scroll.scrollLeft >= scroll.scrollWidth - scroll.clientWidth - 1;
   }
   scroll.addEventListener("scroll", updateNav, { passive: true });
+  refreshStoriesNav = updateNav;
   updateNav();
 })();
 
