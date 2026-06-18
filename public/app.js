@@ -676,16 +676,29 @@ let refreshStoriesNav = () => {};
 // ─── Toothless Easter Egg ─────────────────────────────────────────────────
 const toothlessWrap    = document.getElementById("toothlessWrap");
 const toothlessOverlay = document.getElementById("toothlessOverlay");
-let toothlessPrevId = null;
+let toothlessPrevId   = null;
+let toothlessPrevTime = 0;
 
 toothlessWrap?.addEventListener("click", (e) => {
   e.stopPropagation();
   toothlessOverlay?.classList.add("open");
+  toothlessPrevId   = songs[currentIdx]?.videoId ?? null;
+  toothlessPrevTime = ytPlayer?.getCurrentTime?.() ?? 0;
+  startAudioKeepalive();
+  ytPlayer?.loadVideoById?.("9MCiixIkzUk");
+  setPlaying(true);
 });
 
 toothlessOverlay?.addEventListener("click", (e) => {
   e.stopPropagation();
   toothlessOverlay.classList.remove("open");
+  if (toothlessPrevId) {
+    ytPlayer?.loadVideoById?.({ videoId: toothlessPrevId, startSeconds: toothlessPrevTime });
+    setPlaying(true);
+  } else {
+    ytPlayer?.stopVideo?.();
+    setPlaying(false);
+  }
 });
 
 // ─── Keep-alive ping ──────────────────────────────────────────────────────
