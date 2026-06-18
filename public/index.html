@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wave | Profile</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a2e'/><ellipse cx='50' cy='56' rx='26' ry='22' fill='%23111'/><ellipse cx='50' cy='38' rx='20' ry='16' fill='%23111'/><polygon points='33,27 25,7 44,24' fill='%23111'/><polygon points='67,27 75,7 56,24' fill='%23111'/><ellipse cx='41' cy='36' rx='5' ry='4' fill='%2300dd77'/><ellipse cx='59' cy='36' rx='5' ry='4' fill='%2300dd77'/><ellipse cx='41' cy='37' rx='2' ry='2.5' fill='%23000'/><ellipse cx='59' cy='37' rx='2' ry='2.5' fill='%23000'/></svg>" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -20,18 +20,6 @@
   <!-- Keyboard Background -->
   <div class="keys-bg" id="keysBg"></div>
 
-  <!-- Theme Toggle -->
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <span class="toggle-track">
-      <span class="toggle-icon toggle-sun">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-5a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 17a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zM4.22 4.22a1 1 0 0 1 1.42 0l.7.71a1 1 0 0 1-1.42 1.41l-.7-.7a1 1 0 0 1 0-1.42zm13.44 13.44a1 1 0 0 1 1.41 0l.71.7a1 1 0 1 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41zM3 11h1a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2zm17 0h1a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2zM4.22 19.78a1 1 0 0 1 0-1.41l.7-.71a1 1 0 1 1 1.42 1.41l-.71.71a1 1 0 0 1-1.41 0zm13.44-13.44a1 1 0 0 1 0-1.42l.71-.7a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0z"/></svg>
-      </span>
-      <span class="toggle-icon toggle-moon">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
-      </span>
-      <span class="toggle-thumb"></span>
-    </span>
-  </button>
 
   <main class="container">
 
@@ -205,6 +193,19 @@
         <a href="/admin.html" class="modal-manage-link">จัดการเพลงทั้งหมด →</a>
       </div>
     </div>
+  </div>
+
+  <!-- Toothless dancing (bottom right) -->
+  <div class="toothless-wrap" id="toothlessWrap" data-emoji="🐉">
+    <img class="toothless-img" src="/toothless.png" alt="Toothless"
+         onerror="this.closest('.toothless-wrap').classList.add('no-img')" />
+  </div>
+
+  <!-- Toothless fullscreen overlay -->
+  <div class="toothless-overlay" id="toothlessOverlay" data-emoji="🐉">
+    <img class="toothless-big-img" src="/toothless.png" alt="Toothless"
+         onerror="this.closest('.toothless-overlay').classList.add('no-img')" />
+    <p class="toothless-hint">คลิกเพื่อกลับ 🐾</p>
   </div>
 
   <!-- Hidden YouTube IFrame -->

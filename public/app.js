@@ -2,15 +2,6 @@
    WAVE PROFILE — app.js
    ════════════════════════════════════════════ */
 
-// ─── Theme ────────────────────────────────────────────────────────────────
-const html = document.documentElement;
-html.dataset.theme = localStorage.getItem("theme") || "dark";
-document.getElementById("themeToggle").addEventListener("click", () => {
-  const next = html.dataset.theme === "dark" ? "light" : "dark";
-  html.dataset.theme = next;
-  localStorage.setItem("theme", next);
-});
-
 // ─── Birthday Countdown ───────────────────────────────────────────────────
 const BDAY_MONTH = 2, BDAY_DAY = 14;
 function updateCountdown() {
@@ -80,7 +71,10 @@ async function loadSongs() {
     rebuildShuffled();
     renderStories();
     renderPlaylist();
-    if (songs.length > 0) updateSongDisplay(Math.min(currentIdx, songs.length - 1));
+    if (songs.length > 0) {
+      currentIdx = Math.floor(Math.random() * songs.length);
+      updateSongDisplay(currentIdx);
+    }
   } catch {
     playlist.innerHTML = '<li class="playlist-loading">โหลดไม่สำเร็จ</li>';
   }
@@ -558,113 +552,99 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// ─── Space-Time Starfield (Canvas 2D) ─────────────────────────────────────
-(function initStarfield() {
+// ─── Hexagon Honeycomb Background ────────────────────────────────────────
+(function initHexBg() {
   const bg = document.getElementById("keysBg");
   if (!bg) return;
   bg.innerHTML = "";
 
   const canvas = document.createElement("canvas");
-  canvas.id = "starCanvas";
+  canvas.id = "hexCanvas";
   bg.appendChild(canvas);
   const ctx = canvas.getContext("2d");
 
-  const COUNT = 100;
-  const LINE_DIST = 130;
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let W, H, stars = [], raf;
+  const R     = 42;
+  const COL_W = R * 1.5 + 1.5;
+  const ROW_H = Math.sqrt(3) * R + 1.5;
+
+  let W, H, hexes = [], raf, resizeTimer;
 
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    buildGrid();
   }
 
-  function initStars() {
-    stars = Array.from({ length: COUNT }, () => ({
-      x:  Math.random() * W,
-      y:  Math.random() * H,
-      r:  0.4 + Math.random() * 1.5,
-      base: 0.35 + Math.random() * 0.65,
-      ts:  0.0006 + Math.random() * 0.0018,   // twinkle speed
-      tp:  Math.random() * Math.PI * 2,        // twinkle phase
-      vx:  (Math.random() - 0.5) * 0.035,
-      vy:  (Math.random() - 0.5) * 0.035,
-    }));
+  function buildGrid() {
+    hexes = [];
+    const cols = Math.ceil(W / COL_W) + 3;
+    const rows = Math.ceil(H / ROW_H) + 3;
+    for (let c = -1; c < cols; c++) {
+      for (let r = -1; r < rows; r++) {
+        hexes.push({
+          x:     c * COL_W + R,
+          baseY: r * ROW_H + (c % 2 === 0 ? 0 : ROW_H / 2),
+          amp:   3 + Math.random() * 8,
+          spd:   0.0005 + Math.random() * 0.001,
+          phase: Math.random() * Math.PI * 2,
+          _y:    0,
+        });
+      }
+    }
   }
 
-  function draw(t) {
-    const dark = document.documentElement.dataset.theme !== "light";
+  function hexPath(x, y) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a  = (Math.PI / 3) * i;
+      const px = x + (R - 2) * Math.cos(a);
+      const py = y + (R - 2) * Math.sin(a);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  }
+
+  let lastT = 0;
+  function frame(t) {
+    raf = requestAnimationFrame(frame);
+    if (t - lastT < 33) return;
+    lastT = t;
+
     ctx.clearRect(0, 0, W, H);
 
-    // Constellation lines
-    ctx.lineWidth = 0.4;
-    for (let i = 0; i < COUNT; i++) {
-      for (let j = i + 1; j < COUNT; j++) {
-        const dx = stars[i].x - stars[j].x;
-        const dy = stars[i].y - stars[j].y;
-        const d2 = dx * dx + dy * dy;
-        if (d2 < LINE_DIST * LINE_DIST) {
-          ctx.globalAlpha = (1 - Math.sqrt(d2) / LINE_DIST) * (dark ? 0.07 : 0.09);
-          ctx.strokeStyle = dark ? "#5a8ce6" : "#1e40af";
-          ctx.beginPath();
-          ctx.moveTo(stars[i].x, stars[i].y);
-          ctx.lineTo(stars[j].x, stars[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Stars — light mode: dark navy/indigo; dark mode: pale blue/white
-    const glowCol  = dark ? "#aac8ff" : "#3b5fc0";
-    const coreHi   = dark ? "#ddeeff" : "#1e3a8a";
-    const coreLo   = dark ? "#c8d8ff" : "#2d4f9e";
-
-    for (let i = 0; i < COUNT; i++) {
-      const s = stars[i];
-      if (!reducedMotion) {
-        s.x += s.vx;  s.y += s.vy;
-        if (s.x < -2) s.x = W + 2;  if (s.x > W + 2) s.x = -2;
-        if (s.y < -2) s.y = H + 2;  if (s.y > H + 2) s.y = -2;
-      }
-      const alpha = s.base * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.ts + s.tp)));
-
-      if (s.r > 1.0) {
-        ctx.globalAlpha = alpha * (dark ? 0.18 : 0.22);
-        ctx.fillStyle = glowCol;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 3.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = s.r > 1.2 ? coreHi : coreLo;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    // Pass 1: fill with shadow
+    ctx.shadowColor   = "rgba(0,0,0,0.09)";
+    ctx.shadowBlur    = 12;
+    ctx.shadowOffsetY = 5;
+    ctx.fillStyle     = "#ffffff";
+    for (const h of hexes) {
+      h._y = h.baseY + h.amp * Math.sin(t * h.spd + h.phase);
+      hexPath(h.x, h._y);
       ctx.fill();
     }
-    ctx.globalAlpha = 1;
+
+    // Pass 2: subtle edge stroke (no shadow)
+    ctx.shadowColor   = "transparent";
+    ctx.shadowBlur    = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.strokeStyle   = "rgba(190,205,230,0.65)";
+    ctx.lineWidth     = 0.8;
+    for (const h of hexes) {
+      hexPath(h.x, h._y);
+      ctx.stroke();
+    }
   }
 
   resize();
-  initStars();
-  window.addEventListener("resize", () => { resize(); initStars(); });
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  });
 
-  let t = 0;
-  function frame() {
-    t++;
-    draw(t);
-    raf = requestAnimationFrame(frame);
-  }
-
-  if (reducedMotion) {
-    draw(0);
-  } else {
-    frame();
-  }
-
-  // Pause when tab is hidden to save CPU
+  raf = requestAnimationFrame(frame);
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { cancelAnimationFrame(raf); }
-    else if (!reducedMotion) { frame(); }
+    if (document.hidden) cancelAnimationFrame(raf);
+    else raf = requestAnimationFrame(frame);
   });
 })();
 
@@ -692,6 +672,30 @@ let refreshStoriesNav = () => {};
   refreshStoriesNav = updateNav;
   updateNav();
 })();
+
+// ─── Toothless Easter Egg ─────────────────────────────────────────────────
+const toothlessWrap    = document.getElementById("toothlessWrap");
+const toothlessOverlay = document.getElementById("toothlessOverlay");
+let toothlessPrevId = null;
+
+toothlessWrap?.addEventListener("click", () => {
+  toothlessOverlay?.classList.add("open");
+  toothlessPrevId = songs[currentIdx]?.videoId ?? null;
+  startAudioKeepalive();
+  ytPlayer?.loadVideoById?.("9MCiixIkzUk");
+  setPlaying(true);
+});
+
+toothlessOverlay?.addEventListener("click", () => {
+  toothlessOverlay.classList.remove("open");
+  if (toothlessPrevId) {
+    ytPlayer?.loadVideoById?.(toothlessPrevId);
+    setPlaying(true);
+  } else {
+    ytPlayer?.stopVideo?.();
+    setPlaying(false);
+  }
+});
 
 // ─── Keep-alive ping ──────────────────────────────────────────────────────
 setInterval(() => fetch("/api/songs", { method: "HEAD" }).catch(() => {}), 60_000);
