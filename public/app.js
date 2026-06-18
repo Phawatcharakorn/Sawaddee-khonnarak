@@ -563,9 +563,10 @@ document.addEventListener("visibilitychange", () => {
   bg.appendChild(canvas);
   const ctx = canvas.getContext("2d");
 
-  const R     = 42;
-  const COL_W = R * 1.5 + 1.5;
-  const ROW_H = Math.sqrt(3) * R + 1.5;
+  const GRID  = 50;              // grid spacing radius
+  const DRAW  = 42;              // drawn radius (gap = GRID - DRAW = 8px)
+  const COL_W = GRID * 1.5;
+  const ROW_H = Math.sqrt(3) * GRID;
 
   let W, H, hexes = [], raf, resizeTimer;
 
@@ -582,10 +583,10 @@ document.addEventListener("visibilitychange", () => {
     for (let c = -1; c < cols; c++) {
       for (let r = -1; r < rows; r++) {
         hexes.push({
-          x:     c * COL_W + R,
+          x:     c * COL_W + GRID,
           baseY: r * ROW_H + (c % 2 === 0 ? 0 : ROW_H / 2),
-          amp:   3 + Math.random() * 8,
-          spd:   0.0005 + Math.random() * 0.001,
+          amp:   2 + Math.random() * 5,
+          spd:   0.0004 + Math.random() * 0.0008,
           phase: Math.random() * Math.PI * 2,
           _y:    0,
         });
@@ -596,10 +597,10 @@ document.addEventListener("visibilitychange", () => {
   function hexPath(x, y) {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
-      const a  = (Math.PI / 3) * i;
-      const px = x + (R - 2) * Math.cos(a);
-      const py = y + (R - 2) * Math.sin(a);
-      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      const a = (Math.PI / 3) * i;
+      i === 0
+        ? ctx.moveTo(x + DRAW * Math.cos(a), y + DRAW * Math.sin(a))
+        : ctx.lineTo(x + DRAW * Math.cos(a), y + DRAW * Math.sin(a));
     }
     ctx.closePath();
   }
@@ -610,28 +611,16 @@ document.addEventListener("visibilitychange", () => {
     if (t - lastT < 33) return;
     lastT = t;
 
-    ctx.clearRect(0, 0, W, H);
+    // Background color fills the gaps naturally
+    ctx.fillStyle = "#dce6f8";
+    ctx.fillRect(0, 0, W, H);
 
-    // Pass 1: fill with shadow
-    ctx.shadowColor   = "rgba(0,0,0,0.09)";
-    ctx.shadowBlur    = 12;
-    ctx.shadowOffsetY = 5;
-    ctx.fillStyle     = "#ffffff";
+    // White hexagons — no shadow, gap creates depth
+    ctx.fillStyle = "#f5f8ff";
     for (const h of hexes) {
       h._y = h.baseY + h.amp * Math.sin(t * h.spd + h.phase);
       hexPath(h.x, h._y);
       ctx.fill();
-    }
-
-    // Pass 2: subtle edge stroke (no shadow)
-    ctx.shadowColor   = "transparent";
-    ctx.shadowBlur    = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.strokeStyle   = "rgba(190,205,230,0.65)";
-    ctx.lineWidth     = 0.8;
-    for (const h of hexes) {
-      hexPath(h.x, h._y);
-      ctx.stroke();
     }
   }
 
