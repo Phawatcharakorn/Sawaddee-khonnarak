@@ -849,7 +849,6 @@ ul { list-style: none; }
   width: 100%;
   height: 100%;
   object-fit: contain;
-  animation: toothless-dance 0.8s ease-in-out infinite;
   pointer-events: none;
   user-select: none;
   display: block;
@@ -889,7 +888,6 @@ ul { list-style: none; }
   max-height: 72vh;
   max-width: 88vw;
   object-fit: contain;
-  animation: toothless-dance-big 0.9s ease-in-out infinite;
   filter: drop-shadow(0 20px 60px rgba(0,200,100,0.2));
   pointer-events: none;
   user-select: none;
