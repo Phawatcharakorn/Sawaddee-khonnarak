@@ -680,21 +680,10 @@ let toothlessPrevId = null;
 
 toothlessWrap?.addEventListener("click", () => {
   toothlessOverlay?.classList.add("open");
-  toothlessPrevId = songs[currentIdx]?.videoId ?? null;
-  startAudioKeepalive();
-  ytPlayer?.loadVideoById?.("9MCiixIkzUk");
-  setPlaying(true);
 });
 
 toothlessOverlay?.addEventListener("click", () => {
   toothlessOverlay.classList.remove("open");
-  if (toothlessPrevId) {
-    ytPlayer?.loadVideoById?.(toothlessPrevId);
-    setPlaying(true);
-  } else {
-    ytPlayer?.stopVideo?.();
-    setPlaying(false);
-  }
 });
 
 // ─── Keep-alive ping ──────────────────────────────────────────────────────
