@@ -49,27 +49,44 @@ async function seedSongs() {
   }
 }
 
-// ─── Connect DB ────────────────────────────────────────────────────────────
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log("✅ MongoDB connected");
-    console.log("🎵 Seeding songs...");
-    await seedSongs();
-    console.log("🎵 Done");
-  })
-  .catch((e) => console.error("❌ MongoDB:", e.message));
+// ─── DB Connection (cached for serverless) ─────────────────────────────────
+let connectionPromise = null;
+
+async function connectDB() {
+  if (mongoose.connection.readyState === 1) return;
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(process.env.MONGODB_URI, {
+        bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then(async () => {
+        console.log("✅ MongoDB connected");
+        seedSongs().catch(console.error);
+      })
+      .catch((err) => {
+        connectionPromise = null;
+        throw err;
+      });
+  }
+  await connectionPromise;
+}
 
 // ─── Express ───────────────────────────────────────────────────────────────
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-function dbReady(req, res, next) {
-  if (mongoose.connection.readyState !== 1)
-    return res.status(503).json({ error: "Database not ready" });
-  next();
-}
+// Connect DB for all API routes
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("❌ MongoDB:", err.message);
+    res.status(503).json({ error: "Database not ready" });
+  }
+});
 
 // GET /api/search?q=... — YouTube search proxy
 app.get("/api/search", async (req, res) => {
@@ -98,7 +115,7 @@ app.get("/api/search", async (req, res) => {
 app.head("/api/songs", (_req, res) => res.sendStatus(200));
 
 // GET /api/songs
-app.get("/api/songs", dbReady, async (_req, res) => {
+app.get("/api/songs", async (_req, res) => {
   const songs = await Song.find().sort({ order: 1, addedAt: 1 });
   res.json(songs);
 });
@@ -161,6 +178,10 @@ app.delete("/api/songs/:id", async (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, () =>
-  console.log(`🎵 About-me server running on http://localhost:${PORT}`)
-);
+if (!process.env.VERCEL) {
+  app.listen(PORT, () =>
+    console.log(`🎵 About-me server running on http://localhost:${PORT}`)
+  );
+}
+
+export default app;
