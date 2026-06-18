@@ -883,8 +883,9 @@ ul { list-style: none; }
 }
 .toothless-overlay.open { opacity: 1; pointer-events: all; }
 .toothless-big-img {
-  max-height: 72vh;
-  max-width: 88vw;
+  height: 68vh;
+  width: auto;
+  max-width: 90vw;
   object-fit: contain;
   filter: drop-shadow(0 20px 60px rgba(0,200,100,0.2));
   pointer-events: none;

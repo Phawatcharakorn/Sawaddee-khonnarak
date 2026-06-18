@@ -183,7 +183,7 @@ function onPlayerReady() {
 }
 
 function onPlayerStateChange(e) {
-  if (e.data === YT.PlayerState.ENDED)    { nextSong(); return; }
+  if (e.data === YT.PlayerState.ENDED)    { if (!toothlessOverlay?.classList.contains("open")) nextSong(); return; }
   if (e.data === YT.PlayerState.PLAYING)  { setPlaying(true); }
   if (e.data === YT.PlayerState.PAUSED)   { setPlaying(false); }
 }
@@ -678,11 +678,13 @@ const toothlessWrap    = document.getElementById("toothlessWrap");
 const toothlessOverlay = document.getElementById("toothlessOverlay");
 let toothlessPrevId = null;
 
-toothlessWrap?.addEventListener("click", () => {
+toothlessWrap?.addEventListener("click", (e) => {
+  e.stopPropagation();
   toothlessOverlay?.classList.add("open");
 });
 
-toothlessOverlay?.addEventListener("click", () => {
+toothlessOverlay?.addEventListener("click", (e) => {
+  e.stopPropagation();
   toothlessOverlay.classList.remove("open");
 });
 
